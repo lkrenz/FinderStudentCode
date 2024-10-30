@@ -24,7 +24,6 @@ public class Finder {
         // TODO: Complete the buildTable() function!
         table = new ArrayList[length];
 
-        br.readLine();
         String csvLine = br.readLine();
         String[] line;
         while (csvLine != null) {
@@ -43,6 +42,9 @@ public class Finder {
     public String query(String key){
         // TODO: Complete the query() function!
         long keyHash = keyHash(key);
+        if (key.equals("www.princeton.edu")) {
+            System.out.println("match");
+        }
 
         ArrayList<KeyVal> possibilities = table[(int)keyHash % length];
         if (possibilities != null) {
