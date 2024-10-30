@@ -23,6 +23,7 @@ public class Finder {
         // TODO: Complete the buildTable() function!
         table = new ArrayList[length];
 
+        br.readLine();
         String[] line = br.readLine().split(" ");
         while (line != null) {
             long hash = keyHash(line[keyCol]);
