@@ -1,6 +1,7 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Finder
@@ -24,13 +25,17 @@ public class Finder {
         table = new ArrayList[length];
 
         br.readLine();
-        String[] line = br.readLine().split(" ");
-        while (line != null) {
+        String csvLine = br.readLine();
+        String[] line;
+        while (csvLine != null) {
+            line = csvLine.split(",");
             long hash = keyHash(line[keyCol]);
             int shortHash = (int) hash % length;
-            table[shortHash] = new ArrayList<>();
+            if (table[shortHash] == null) {
+                table[shortHash] = new ArrayList<>();
+            }
             table[shortHash].add(new KeyVal(hash, line[valCol]));
-            line = br.readLine().split(" ");
+            csvLine = br.readLine();
         }
         br.close();
     }
@@ -39,7 +44,7 @@ public class Finder {
         // TODO: Complete the query() function!
         long keyHash = keyHash(key);
 
-        ArrayList<KeyVal> possibilities = table[(int)keyHash % 10000];
+        ArrayList<KeyVal> possibilities = table[(int)keyHash % length];
         if (possibilities != null) {
             int length = possibilities.size();
             for (int i = 0; i < length; i++) {
