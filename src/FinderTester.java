@@ -11,7 +11,7 @@ public class FinderTester {
     private int valCol;
     private BufferedReader csvReader, queryReader, resultReader;
 
-    @Test
+    @org.junit.Test
     @Timeout(value = 100, unit = TimeUnit.MILLISECONDS)
     public void testElements() {
         setTestData("elements", 2, 0);
