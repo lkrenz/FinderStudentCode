@@ -22,43 +22,48 @@ public class Finder {
 
     public void buildTable(BufferedReader br, int keyCol, int valCol) throws IOException {
         // TODO: Complete the buildTable() function!
-        ArrayList<KeyVal> vals = new ArrayList<>();
-        int length = 2;
-        int tableLength = 4;
-        boolean isTrue = true;
-        while (isTrue) {
+        String line = "";
+        int tableLength = 2;
+        int cap = 1;
+        ArrayList<KeyVal> values = new ArrayList<>();
+        String[] csvLine;
+        while (line != null) {
             tableLength *= 2;
-            length *= 2;
+            cap *= 2;
             table = new KeyVal[tableLength];
-            for (int i = 0; i < vals.size(); i++) {
-                KeyVal num = vals.get(i);
-                int index = (int) (num.keyHash % tableLength);
-                while (table[index] != null) {
-                    index++;
-                    if (index >= tableLength) {
+            for (KeyVal keyVal : values) {
+                long hash = keyVal.keyHash;
+                int index = (int) (hash % tableLength);
+                while (true) {
+                    try {
+                        if (table[index] == null) {
+                            break;
+                        }
+                        index++;
+                    }
+                    catch (Exception e) {
                         index = 0;
                     }
                 }
-                table[index] = num;
+                table[index] = keyVal;
             }
-            for (int i = vals.size(); i < length; i++) {
-                String csvLine = br.readLine();
-                if (csvLine == null) {
-                    isTrue = false;
-                    break;
-                }
-                String[] line = csvLine.split(",");
-                long hash = keyHash(line[keyCol]);
-                KeyVal num = new KeyVal(hash, line[valCol]);
-                vals.add(num);
-                int index = (int)(hash % tableLength);
-                while (table[index] != null) {
-                    index++;
-                    if (index >= tableLength) {
+            for (int i = values.size(); i < cap && (line = br.readLine()) != null; i++) {
+                csvLine = line.split(",");
+                KeyVal value = new KeyVal(keyHash(csvLine[keyCol]), csvLine[valCol]);
+                int index = (int)(value.keyHash % tableLength);
+                while (true) {
+                    try {
+                        if (table[index] == null) {
+                            break;
+                        }
+                        index++;
+                    }
+                    catch (Exception e) {
                         index = 0;
                     }
                 }
-                table[index] = num;
+                table[index] = value;
+                values.add(value);
             }
         }
 
@@ -68,8 +73,6 @@ public class Finder {
     public String query(String key){
         long keyHash = keyHash(key);
         int index = (int)(keyHash % table.length);
-
-
         while (table[index] != null) {
             if (table[index].keyHash == keyHash) {
                 return table[index].value;
