@@ -43,17 +43,24 @@ public class Finder {
                 // Places the value into the hash table
                 // My idea with using try and catch was to avoid having to check if index has exceeded table length.
                 // I think this speeds it up very slightly.
-                while (true) {
-                    try {
-                        if (table[index] == null) {
-                            break;
-                        }
-                        index++;
-                    }
-                    catch (Exception e) {
+//                while (true) {
+//                    try {
+//                        if (table[index] == null) {
+//                            break;
+//                        }
+//                        index++;
+//                    }
+//                    catch (Exception e) {
+//                        index = 0;
+//                    }
+//                }
+                while (table[index] != null) {
+                    index++;
+                    if (index > tableLength) {
                         index = 0;
                     }
                 }
+
                 table[index] = keyVal;
             }
 
@@ -64,14 +71,21 @@ public class Finder {
                 csvLine = line.split(",");
                 KeyVal value = new KeyVal(keyHash(csvLine[keyCol]), csvLine[valCol]);
                 int index = (int)(value.keyHash % tableLength);
-                while (true) {
-                    try {
-                        if (table[index] == null) {
-                            break;
-                        }
-                        index++;
-                    }
-                    catch (Exception e) {
+//                while (true) {
+//                    try {
+//                        if (table[index] == null) {
+//                            break;
+//                        }
+//                        index++;
+//                    }
+//                    catch (Exception e) {
+//                        index = 0;
+//                    }
+//                }
+
+                while (table[index] != null) {
+                    index++;
+                    if (index > tableLength) {
                         index = 0;
                     }
                 }
@@ -88,20 +102,30 @@ public class Finder {
         int index = (int)(keyHash % tableLength);
 
         // Iterates through cluster until a key match or a null value is found
-        while (true) {
-            try {
-                if (table[index] == null) {
-                    return INVALID;
-                }
-                if (table[index].keyHash == keyHash) {
-                    return table[index].value;
-                }
-                index++;
+//        while (true) {
+//            try {
+//                if (table[index] == null) {
+//                    return INVALID;
+//                }
+//                if (table[index].keyHash == keyHash) {
+//                    return table[index].value;
+//                }
+//                index++;
+//            }
+//            catch (Exception e) {
+//                index = 0;
+//            }
+//        }
+        while (table[index] != null) {
+            if (table[index].keyHash == keyHash) {
+                return table[index].value;
             }
-            catch (Exception e) {
+            index++;
+            if (index > tableLength) {
                 index = 0;
             }
         }
+        return INVALID;
     }
 
     // Method for hashing strings
