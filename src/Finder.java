@@ -9,31 +9,40 @@ import java.util.Arrays;
  * for Adventures in Algorithms
  * At Menlo School in Atherton, CA
  *
- * Completed by: [YOUR NAME HERE]
+ * Completed by: Liam Krenz
  **/
 
 public class Finder {
 
     private static final String INVALID = "INVALID KEY";
-    private static final int length = 10000;
+    private static int length = 10000;
+    private static int tableLength = 20000;
     KeyVal[] table;
 
     public Finder() {}
 
+    // Reads in key value pairs and creates hash table
     public void buildTable(BufferedReader br, int keyCol, int valCol) throws IOException {
-        // TODO: Complete the buildTable() function!
         String line = "";
-        int tableLength = 2;
-        int cap = 1;
         ArrayList<KeyVal> values = new ArrayList<>();
         String[] csvLine;
+
+        // Runs until end of file
         while (line != null) {
+
+            // Doubles the length of the table
             tableLength *= 2;
-            cap *= 2;
+            length *= 2;
             table = new KeyVal[tableLength];
+
+            // Adds all previously added values from the array list
             for (KeyVal keyVal : values) {
                 long hash = keyVal.keyHash;
                 int index = (int) (hash % tableLength);
+
+                // Places the value into the hash table
+                // My idea with using try and catch was to avoid having to check if index has exceeded table length.
+                // I think this speeds it up very slightly.
                 while (true) {
                     try {
                         if (table[index] == null) {
@@ -47,7 +56,11 @@ public class Finder {
                 }
                 table[index] = keyVal;
             }
-            for (int i = values.size(); i < cap && (line = br.readLine()) != null; i++) {
+
+            // Reads in and adds new values until the file ends or the cap is reached
+            for (int i = values.size(); i < length && (line = br.readLine()) != null; i++) {
+
+                // Creates and adds new KeyVal with data from line
                 csvLine = line.split(",");
                 KeyVal value = new KeyVal(keyHash(csvLine[keyCol]), csvLine[valCol]);
                 int index = (int)(value.keyHash % tableLength);
@@ -66,25 +79,32 @@ public class Finder {
                 values.add(value);
             }
         }
-
         br.close();
     }
 
+    // Searches hashmap for specified key and returns the value or INVALID
     public String query(String key){
         long keyHash = keyHash(key);
-        int index = (int)(keyHash % table.length);
-        while (table[index] != null) {
-            if (table[index].keyHash == keyHash) {
-                return table[index].value;
+        int index = (int)(keyHash % tableLength);
+
+        // Iterates through cluster until a key match or a null value is found
+        while (true) {
+            try {
+                if (table[index] == null) {
+                    return INVALID;
+                }
+                if (table[index].keyHash == keyHash) {
+                    return table[index].value;
+                }
+                index++;
             }
-            index++;
-            if (index >= table.length) {
+            catch (Exception e) {
                 index = 0;
             }
         }
-        return INVALID;
     }
 
+    // Method for hashing strings
     public long keyHash(String value) {
         long hash = 0;
         int length = value.length();
@@ -95,10 +115,11 @@ public class Finder {
         return hash;
     }
 
-    private class KeyVal {
+    // Class to store key value pairs
+    private static class KeyVal {
 
-        private long keyHash;
-        private String value;
+        private final long keyHash;
+        private final String value;
 
         public KeyVal(long keyHash, String value) {
             this.keyHash = keyHash;
